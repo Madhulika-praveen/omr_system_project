@@ -18,8 +18,8 @@ app = FastAPI(title="OMR FastAPI Service")
 # Safe answer key loading
 ANSWER_KEY = {}
 try:
-    ANSWER_KEY = load_answer_key("E:/omr_system_project/data/answers/ground_truth_setA.csv")
-    print("Answer key loaded successfully")
+    ANSWER_KEY = load_answer_key("data/answers/ground_truth_setA.csv")
+
 except Exception as e:
     print("WARNING: Could not load answer key:", e)
 
