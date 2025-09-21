@@ -1,7 +1,11 @@
+# src/ui/dashboard.py
 import streamlit as st
-import requests
 import pandas as pd
 
+# Import process_sheet directly
+from src.api.main import process_sheet
+
+st.set_page_config(page_title="OMR Evaluation Dashboard", layout="wide")
 st.title("OMR Evaluation Dashboard")
 
 # Upload OMR image
@@ -12,26 +16,23 @@ if uploaded_file:
     set_id = st.text_input("Set ID (e.g., A)", value="A")
     
     if st.button("Evaluate"):
-        # Prepare files and parameters for API request
-        files = {"file": (uploaded_file.name, uploaded_file, uploaded_file.type)}
-        params = {"set_id": set_id}
-        
-        # Send request to FastAPI OMR endpoint
-        response = requests.post("http://127.0.0.1:8000/upload/", files=files, params=params)
-        
-        if response.status_code == 200:
-            result = response.json()
+        try:
+            # Call process_sheet directly
+            result = process_sheet(uploaded_file, set_id.upper())
             
-            # Display total score
-            st.success(f"Total Score: {result['total']}")
-            
-            # Convert scores dict to DataFrame for display and download
-            scores_df = pd.DataFrame(list(result['scores'].items()), columns=["Subject", "Score"])
-            st.dataframe(scores_df)
-            
-            # Provide CSV download
-            csv_data = scores_df.to_csv(index=False).encode('utf-8')
-            st.download_button("Download Results", csv_data, "results.csv", "text/csv")
+            if "error" in result:
+                st.error(result["error"])
+            else:
+                # Display total score
+                st.success(f"Total Score: {result['total']}")
+                
+                # Convert scores dict to DataFrame for display and download
+                scores_df = pd.DataFrame(list(result['scores'].items()), columns=["Subject", "Score"])
+                st.dataframe(scores_df)
+                
+                # Provide CSV download
+                csv_data = scores_df.to_csv(index=False).encode('utf-8')
+                st.download_button("Download Results", csv_data, "results.csv", "text/csv")
         
-        else:
-            st.error(f"Error: {response.text}")
+        except Exception as e:
+            st.error(f"Error during processing: {str(e)}")
