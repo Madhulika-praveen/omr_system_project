@@ -30,32 +30,30 @@ def detect_bubble_blocks(sheet_img):
                 bubbles.append((x, y, bw, bh))
     return sorted(bubbles, key=lambda b: (b[1], b[0]))
 
-# ---------------- Dataset Labeling ----------------
-def create_dataset(img_path):
-    img = cv2.imread(img_path)
-    if img is None:
-        raise ValueError("Cannot read image at " + img_path)
+# # ---------------- Dataset Labeling ----------------
+# def create_dataset(img_path):
+#     img = cv2.imread(img_path)
+#     if img is None:
+#         raise ValueError("Cannot read image at " + img_path)
 
-    # Detect bubbles
-    bubbles = detect_bubble_blocks(img)
-    os.makedirs("dataset/positive", exist_ok=True)
-    os.makedirs("dataset/negative", exist_ok=True)
+#     # Detect bubbles
+#     bubbles = detect_bubble_blocks(img)
+#     os.makedirs("dataset/positive", exist_ok=True)
+#     os.makedirs("dataset/negative", exist_ok=True)
 
-    count_pos = 0
-    count_neg = 0
-    for x, y, w, h in bubbles:
-        roi = img[y:y+h, x:x+w]
-        roi_resized = cv2.resize(roi, (28,28))
-        cv2.imshow("ROI", roi_resized)
-        key = cv2.waitKey(0) & 0xFF
-        if key == ord('y'):
-            cv2.imwrite(f"dataset/positive/bubble_{count_pos}.png", roi_resized)
-            count_pos += 1
-        elif key == ord('n'):
-            cv2.imwrite(f"dataset/negative/noise_{count_neg}.png", roi_resized)
-            count_neg += 1
-    cv2.destroyAllWindows()
-    print("Dataset labeling complete!")
+#     count_pos = 0
+#     count_neg = 0
+#     for x, y, w, h in bubbles:
+#         roi = img[y:y+h, x:x+w]
+#         roi_resized = cv2.resize(roi, (28,28))
+#         key = cv2.waitKey(0) & 0xFF
+#         if key == ord('y'):
+#             cv2.imwrite(f"dataset/positive/bubble_{count_pos}.png", roi_resized)
+#             count_pos += 1
+#         elif key == ord('n'):
+#             cv2.imwrite(f"dataset/negative/noise_{count_neg}.png", roi_resized)
+#             count_neg += 1
+#     print("Dataset labeling complete!")
 
 # ---------------- Prepare Data for ML ----------------
 def load_dataset():
