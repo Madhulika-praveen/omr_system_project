@@ -1,9 +1,11 @@
-# src/ui/dashboard.py
 import streamlit as st
 import pandas as pd
+import sys
+import os
 
-# Import process_sheet directly
-from src.api.main import process_sheet
+# --- Fix imports for Streamlit Cloud ---
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from api.main import process_sheet
 
 st.set_page_config(page_title="OMR Evaluation Dashboard", layout="wide")
 st.title("OMR Evaluation Dashboard")
